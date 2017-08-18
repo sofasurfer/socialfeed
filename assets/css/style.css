@@ -1,0 +1,28 @@
+.main.container{
+    margin-top: 60px;
+}
+
+
+.grid .content{
+    height: 0px;
+    top:0px;
+    display: none;
+    position: absolute;
+    background-color: white;
+}
+
+.twitter .thumbnail,
+.facebook .thumbnail{
+    min-height: 250px;
+    border: solid 1px gray;
+    position: relative;
+    padding: 2rem;
+    font-size: 2rem;
+}
+
+.twitter .thumbnail .meta,
+.facebook .thumbnail .meta{
+    font-size: 1.2rem;
+    position: absolute;
+    bottom: 5px;
+}
