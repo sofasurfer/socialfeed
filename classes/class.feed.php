@@ -125,7 +125,7 @@ class SocialFeed {
 
     private function set_cache($key,$data){
         $filename = 'cache/'. $key;
-        $myfile = fopen($filename, "w") or die("Unable to open file!");
+        $myfile = fopen($filename, "w") or die("Unable to open file! Make sure the cache folder exists in the root directory ");
         fwrite($myfile, $data);
         fclose($myfile);
     }  
