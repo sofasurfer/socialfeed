@@ -3,12 +3,15 @@
 **Author: Kilian Bohnenblust (http://sofasurfer.org)**
 
 
-Simple library to get social feeds, supports
+Simple library to get social feeds, supports:
 * Facebook
 * Twitter
 * Instagram
 
 ## Usage
+
+Rename config.tpl to config.php and set the required parameters.
+
 ```php
 <?php
 include 'config.php';
