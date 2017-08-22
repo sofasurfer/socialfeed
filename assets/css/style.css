@@ -10,8 +10,10 @@
     background-color: white;
 }
 
-.grid .thumbnail{
-    padding: 1.5rem;
+.grid .thumbnail p{
+    padding-top: 1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
     font-size: 1.6rem;    
 }
 
@@ -21,6 +23,6 @@
 
 .thumbnail .meta{
     font-size: 1.2rem;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
 }

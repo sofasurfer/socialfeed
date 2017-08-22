@@ -59,18 +59,21 @@ class SocialFeed {
         foreach($fb_feed->data as $ig){
 
             // Get video/image sources
-            if($ig->attachments->data[0]->type === 'video_inline'){
+            if(!empty($ig->attachments->data[0]->type) && $ig->attachments->data[0]->type === 'video_inline'){
                 $media = array(
                     'type' => 'video',
                     'video' => $ig->attachments->data[0]->url,
                     'source' => $ig->attachments->data[0]->media->image->src,
                     );
-            }else{
+            }else if(!empty($ig->attachments->data[0]->media->image->src)){
                 $media = array(
                     'type' => $ig->attachments->data[0]->type,
                     'source' => $ig->attachments->data[0]->media->image->src,
                     );  
+            }else{
+                $media = array('type'=>'none');
             }
+
             // Replace long URL's
             $regex = "@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?).*$)@";
             $message = preg_replace($regex, ' ', $ig->message);
@@ -101,7 +104,7 @@ class SocialFeed {
                 'source' => 'twitter',
                 'date' => strtotime($ig->created_at),
                 'text' => $message,
-                'media' => array(),
+                'media' => array('type'=>'none'),
                 'link' => $ig->id
                 );
             array_push($feed, $item);
@@ -150,10 +153,9 @@ class SocialFeed {
             $facebook = new Facebook($config);
 
             // now we can access various parts of the graph, starting with the feed
-            $pagefeed = $facebook->api("/" . FACEBOOK_PAGEID . "/posts?fields=attachments,message,created_time");
+            $pagefeed = $facebook->api("/" . FACEBOOK_PAGEID . "/feed?fields=attachments,message,created_time");
             $json = json_encode($pagefeed);
-            error_log(print_r($json,true));
-            //$this->set_cache('facebook',$json);
+            $this->set_cache('facebook',$json);
         }
         return json_decode($json);
     }

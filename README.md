@@ -27,4 +27,4 @@ foreach ($result->items as $media) {
 
 ```
 
-Hope this helps :)
+Hope this helps :) check out the example page: (http://dev.sofasurfer.org/?)

@@ -46,12 +46,14 @@ $feed = new SocialFeed();
                                     poster=\"{$poster}\" controls>
                                      <source src=\"{$source}\" type=\"video/mp4\" />
                                    </video>";
-                        } else {
+                        } else if (!empty($item->media->source)) {
                             // image
                             $source = $item->media->source;
                             $image = "<img class=\"media\" src=\"{$source}\"/>";
                         }
-                        echo '<div class="grid-item col-md-3"><div class="thumbnail"><p>' . $item->text .'</p>' . $image 
+                        echo '<div class="grid-item col-md-3"><div class="thumbnail">' 
+                                . $image 
+                                . '<p>' . $item->text .'</p>' 
                                 . '<div class="meta">' . date('d.m.Y', $item->date) . ' - ' . $item->source . '</div>'.
                               '</div></div>';
                     }
