@@ -6,9 +6,82 @@ class SocialFeed {
 
     }
 
-    public function get_feed(){
+    public function get_feeds(){
 
+        $feed = array();
 
+        $ig_feed = $this->get_instagram();
+        foreach($ig_feed->items as $ig){
+            if( $ig->type === 'video' ){
+                $media = array(
+                    'type' => $ig->type,
+                    'video' => $ig->videos->standard_resolution->url,
+                    'source' => $ig->images->low_resolution->url
+                );
+            }else{
+                $media = array(
+                    'type' => $ig->type,
+                    'source' => $ig->images->low_resolution->url
+                );
+            }
+            $item = array(
+                'source' => 'instagram',
+                'date' => $ig->created_time,
+                'text' => $ig->caption->text,
+                'media' => $media,
+                'link' => $ig->link
+                );
+            array_push($feed, $item);
+        }
+
+        $fb_feed = $this->get_facebook();
+        foreach($fb_feed->data as $ig){
+            if($ig->attachments->data[0]->type === 'video_inline'){
+                $media = array(
+                    'type' => 'video',
+                    'video' => $ig->attachments->data[0]->url,
+                    'source' => $ig->attachments->data[0]->media->image->src,
+                    );
+            }else{
+                $media = array(
+                    'type' => $ig->attachments->data[0]->type,
+                    'source' => $ig->attachments->data[0]->media->image->src,
+                    );  
+            }
+            // Replace long URL's
+            $regex = "@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?).*$)@";
+            $message = preg_replace($regex, ' ', $ig->message);
+            $item = array(
+                'source' => 'facebook',
+                'date' => strtotime($ig->created_time),
+                'text' => $message,
+                'media' => $media,
+                'link' => $ig->id
+                );
+            array_push($feed, $item);
+        }
+
+        $tw_feed = $this->get_twitter();
+        foreach($tw_feed as $ig){
+            $url = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i'; 
+            $message = preg_replace($url, '<a href="$0" target="_blank" title="$0">$0</a>', $ig->text);
+            $item = array(
+                'source' => 'twitter',
+                'date' => strtotime($ig->created_at),
+                'text' => $message,
+                'media' => array(),
+                'link' => $ig->id
+                );
+            array_push($feed, $item);
+        } 
+
+        // sort result
+        usort($feed, function($a, $b) {
+            return $a['date'] <=> $b['date'];
+        });
+        $feed = array_reverse($feed);
+
+        return json_decode(json_encode($feed));
     }
 
 
@@ -45,7 +118,7 @@ class SocialFeed {
             $facebook = new Facebook($config);
 
             // now we can access various parts of the graph, starting with the feed
-            $pagefeed = $facebook->api("/" . FACEBOOK_PAGEID . "/posts?fields=attachments");
+            $pagefeed = $facebook->api("/" . FACEBOOK_PAGEID . "/posts?fields=attachments,message,created_time");
             $json = json_encode($pagefeed);
             $this->set_cache('facebook',$json);
         }

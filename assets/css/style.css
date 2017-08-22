@@ -2,7 +2,6 @@
     margin-top: 60px;
 }
 
-
 .grid .content{
     height: 0px;
     top:0px;
@@ -11,18 +10,17 @@
     background-color: white;
 }
 
-.twitter .thumbnail,
-.facebook .thumbnail{
-    min-height: 250px;
-    border: solid 1px gray;
-    position: relative;
-    padding: 2rem;
-    font-size: 2rem;
+.grid .thumbnail{
+    padding: 1.5rem;
+    font-size: 1.6rem;    
 }
 
-.twitter .thumbnail .meta,
-.facebook .thumbnail .meta{
+.grid .thumbnail:hover{
+    background-color: pink;
+}
+
+.thumbnail .meta{
     font-size: 1.2rem;
-    position: absolute;
-    bottom: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
