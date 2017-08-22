@@ -61,7 +61,7 @@ $feed = new SocialFeed();
             </div>
         </div>
         <footer class="container">
-            Built by Raptus AG
+            Built by <a href="https://twitter.com/sofacoder" target="_blank">@SofaCoder</a>
         </footer>
 <?php
 include 'templates/footer.php';

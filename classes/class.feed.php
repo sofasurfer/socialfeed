@@ -1,17 +1,30 @@
 <?php
 
+/*
+    Retrieves different social media feeds
+
+*/
 class SocialFeed {
 
     public function __construct() {
 
     }
 
+    /*
+        Retrieve all feeds together
+    */
     public function get_feeds(){
 
+        // Feed list
         $feed = array();
 
+        /*
+            Get Instagram feed
+        */
         $ig_feed = $this->get_instagram();
         foreach($ig_feed->items as $ig){
+
+            // Get video/image sources
             if( $ig->type === 'video' ){
                 $media = array(
                     'type' => $ig->type,
@@ -24,10 +37,11 @@ class SocialFeed {
                     'source' => $ig->images->low_resolution->url
                 );
             }
-            // Replace hashtags
+            // Replace hashtags and user links
             $message = preg_replace('/#([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://www.instagram.com/explore/tags/$1/">#$1</a>', $ig->caption->text);
             $message = preg_replace('/@([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://www.instagram.com/$1/">@$1</a>', $message);
 
+            // Add new item
             $item = array(
                 'source' => 'instagram',
                 'date' => $ig->created_time,
@@ -38,8 +52,13 @@ class SocialFeed {
             array_push($feed, $item);
         }
 
+        /*
+            Get Facebook feed
+        */
         $fb_feed = $this->get_facebook();
         foreach($fb_feed->data as $ig){
+
+            // Get video/image sources
             if($ig->attachments->data[0]->type === 'video_inline'){
                 $media = array(
                     'type' => 'video',
@@ -55,6 +74,7 @@ class SocialFeed {
             // Replace long URL's
             $regex = "@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?).*$)@";
             $message = preg_replace($regex, ' ', $ig->message);
+            $message = preg_replace('/#([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://www.facebook.com/hashtag/$1/">#$1</a>', $message);            
             $item = array(
                 'source' => 'facebook',
                 'date' => strtotime($ig->created_time),
@@ -65,6 +85,9 @@ class SocialFeed {
             array_push($feed, $item);
         }
 
+        /*
+            Get Twitter feed
+        */
         $tw_feed = $this->get_twitter();
         foreach($tw_feed as $ig){
             $url = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i'; 
@@ -198,9 +221,8 @@ class SocialFeed {
         Caches the feed items
     */
     private function get_cache($key){
-
         $filename = 'cache/'. $key;
-        if(file_exists($filename) && (filemtime($filename)+60) > time() ){
+        if(file_exists($filename) && (filemtime($filename)+FEED_CACHE_TIME) > time() ){
             return file_get_contents($filename);
         }
         return false;
