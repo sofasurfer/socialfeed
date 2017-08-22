@@ -24,10 +24,14 @@ class SocialFeed {
                     'source' => $ig->images->low_resolution->url
                 );
             }
+            // Replace hashtags
+            $message = preg_replace('/#([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://www.instagram.com/explore/tags/$1/">#$1</a>', $ig->caption->text);
+            $message = preg_replace('/@([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://www.instagram.com/$1/">@$1</a>', $message);
+
             $item = array(
                 'source' => 'instagram',
                 'date' => $ig->created_time,
-                'text' => $ig->caption->text,
+                'text' => $message,
                 'media' => $media,
                 'link' => $ig->link
                 );
@@ -65,6 +69,11 @@ class SocialFeed {
         foreach($tw_feed as $ig){
             $url = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i'; 
             $message = preg_replace($url, '<a href="$0" target="_blank" title="$0">$0</a>', $ig->text);
+
+            // Replace hashtags
+            $message = preg_replace('/#([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://twitter.com/hashtag/$1/">#$1</a>', $message);
+            $message = preg_replace('/@([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://twitter.com/$1/">@$1</a>', $message);
+
             $item = array(
                 'source' => 'twitter',
                 'date' => strtotime($ig->created_at),
@@ -120,7 +129,8 @@ class SocialFeed {
             // now we can access various parts of the graph, starting with the feed
             $pagefeed = $facebook->api("/" . FACEBOOK_PAGEID . "/posts?fields=attachments,message,created_time");
             $json = json_encode($pagefeed);
-            $this->set_cache('facebook',$json);
+            error_log(print_r($json,true));
+            //$this->set_cache('facebook',$json);
         }
         return json_decode($json);
     }
