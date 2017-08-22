@@ -64,6 +64,7 @@ $feed = new SocialFeed();
         </div>
         <footer class="container">
             Built by <a href="https://twitter.com/sofacoder" target="_blank">@SofaCoder</a>
+            fork this on <a href="https://github.com/sofasurfer/socialfeed" target="_blank">GitHub</a>
         </footer>
 <?php
 include 'templates/footer.php';
