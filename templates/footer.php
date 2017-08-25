@@ -3,7 +3,7 @@
         <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
         <script>
             $(document).ready(function () {
-                // rollover effect
+                $('.carousel').carousel();
                 $('.grid').masonry({
                   // options
                   itemSelector: '.grid-item',

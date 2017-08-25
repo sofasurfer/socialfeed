@@ -20,9 +20,7 @@ $feed = new SocialFeed();
             </div>
             <div id="navbar" class="collapse navbar-collapse">
               <ul class="nav navbar-nav">
-                <li><a href="#instagram">Instagram</a></li>
-                <li><a href="#twitter">Twitter</a></li>
-                <li><a href="#facebook">Facebook</a></li>
+                <li><a target="_blank" href="https://github.com/sofasurfer/socialfeed">Fork me on GitHub</a></li>
               </ul>
             </div>
           </div>
@@ -30,6 +28,7 @@ $feed = new SocialFeed();
 
         <div class="container main">
             <div id="all" class="row">
+
                 <?php 
                 $all = $feed->get_feeds();
                 
@@ -39,16 +38,40 @@ $feed = new SocialFeed();
                     echo '<div class="grid all">';
                     foreach($all as $item){
                         $image = "";
-                        if ($item->media->type === 'video' && $item->source === 'instagram') {
+                        if (!empty($item->media[0]) && $item->media[0]->type === 'video' && $item->source === 'instagram') {
                             $poster = $item->media->source;
                             $source = $item->media->video;
                             $image = "<video class=\"embed-responsive-item\" width=\"230\" height=\"180\" 
                                     poster=\"{$poster}\" controls>
                                      <source src=\"{$source}\" type=\"video/mp4\" />
                                    </video>";
-                        } else if (!empty($item->media->source)) {
+                        } else if (!empty($item->media) && count($item->media) > 1 ){
+                            $indicators = array();
+                            $slides = array();
+                            $counter = 0;
+                            foreach($item->media as $mitem){
+                                $class = '';
+                                if ($counter == 0 ){
+                                    $class = 'active';
+                                }
+                                array_push($indicators, '<li data-target="#carousel-example-generic-'.$item->date.'" data-slide-to="'.$counter.'" class="'.$class.'"></li>');
+                                array_push($slides, '<div class="item '.$class.'"><img src="'.$mitem->source.'"></div>');
+                                $counter++;
+
+                            }
+                            $image = '<div id="carousel-example-generic-'.$item->date.'" class="carousel slide" data-ride="carousel">';
+                            $image .= '<ol class="carousel-indicators">';
+                            $image .= implode('',$indicators);
+                            $image .= '</ol>';
+                            $image .= '<div class="carousel-inner" role="listbox">';
+                            $image .= implode('',$slides);
+                            $image .= '</div>';
+                            $image .= '</div>';
+
+
+                        } else if (!empty($item->media[0]->source)) {
                             // image
-                            $source = $item->media->source;
+                            $source = $item->media[0]->source;
                             $image = "<img class=\"media\" src=\"{$source}\"/>";
                         }
                         echo '<div class="grid-item col-md-3"><div class="thumbnail">' 
