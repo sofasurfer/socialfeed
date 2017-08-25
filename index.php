@@ -39,8 +39,8 @@ $feed = new SocialFeed();
                     foreach($all as $item){
                         $image = "";
                         if (!empty($item->media[0]) && $item->media[0]->type === 'video' && $item->source === 'instagram') {
-                            $poster = $item->media->source;
-                            $source = $item->media->video;
+                            $poster = $item->media[0]->source;
+                            $source = $item->media[0]->video;
                             $image = "<video class=\"embed-responsive-item\" width=\"230\" height=\"180\" 
                                     poster=\"{$poster}\" controls>
                                      <source src=\"{$source}\" type=\"video/mp4\" />
