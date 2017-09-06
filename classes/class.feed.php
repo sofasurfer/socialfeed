@@ -160,7 +160,15 @@ class SocialFeed {
         if($this->get_cache('instagram')){
             $json = $this->get_cache('instagram');
         }else{
-            $json = file_get_contents('https://www.instagram.com/'.INSTAGRAM_FEED.'/media/');
+            $url = 'https://www.instagram.com/'.INSTAGRAM_FEED.'/media/';
+            if (!function_exists('curl_init')){ 
+                die('CURL is not installed!');
+            }
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $json = curl_exec($ch);
+            curl_close($ch);
             $this->set_cache('instagram',$json);
         }
         return json_decode($json);
