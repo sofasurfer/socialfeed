@@ -16,7 +16,7 @@ $feed = new SocialFeed();
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="#">SocialFeeds</a>
+              <a class="navbar-brand" href="#">SofaFeeds</a>
             </div>
             <div id="navbar" class="collapse navbar-collapse">
               <ul class="nav navbar-nav">
@@ -77,7 +77,7 @@ $feed = new SocialFeed();
                         echo '<div class="grid-item col-md-3"><div class="thumbnail">' 
                                 . $image 
                                 . '<p>' . $item->text .'</p>' 
-                                . '<div class="meta">' . date('d.m.Y', $item->date) . ' - ' . $item->source . '</div>'.
+                                . '<div class="meta">' . date('d.m.Y', $item->date) . ' - <a target="_blank" href="' . $item->link . '">' . $item->source . '</a></div>'.
                               '</div></div>';
                     }
                     echo '</div>';
@@ -87,7 +87,7 @@ $feed = new SocialFeed();
         </div>
         <footer class="container">
             Built by <a href="https://twitter.com/sofacoder" target="_blank">@SofaCoder</a>
-            fork this on <a href="https://github.com/sofasurfer/socialfeed" target="_blank">GitHub</a>
+            fork me on <a href="https://github.com/sofasurfer/socialfeed" target="_blank">GitHub</a>
         </footer>
 <?php
 include 'templates/footer.php';
