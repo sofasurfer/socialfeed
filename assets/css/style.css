@@ -29,3 +29,9 @@
     padding-left: 1.5rem;
     padding-right: 1.5rem;
 }
+.carousel-indicators li{
+    border-color: yellow!important;
+}
+.carousel-indicators .active{
+    background-color: yellow!important;
+}
