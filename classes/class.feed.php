@@ -74,7 +74,9 @@ class SocialFeed {
                 // Get video/image sources
                 if(!empty($ig->attachments->data[0]->type) && $ig->attachments->data[0]->type === 'video_inline'){
                     $media[] = array(
-                        'type' => 'video',
+                        'type' => 'video_fb',
+                        'width' => $ig->attachments->data[0]->media->image->width,
+                        'height' => $ig->attachments->data[0]->media->image->height,                        
                         'video' => $ig->attachments->data[0]->url,
                         'source' => $ig->attachments->data[0]->media->image->src,
                         );

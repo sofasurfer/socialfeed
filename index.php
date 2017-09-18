@@ -30,7 +30,7 @@ $feed = new SocialFeed();
             <div id="all" class="row">
 
                 <?php 
-                $all = $feed->get_feeds(array('instagram','twitter'));
+                $all = $feed->get_feeds(array('instagram','twitter','facebook-'));
                 
                 if( false ){
                     echo '<pre>'.print_r($all,true).'</pre>';
@@ -41,10 +41,21 @@ $feed = new SocialFeed();
                         if (!empty($item->media[0]) && $item->media[0]->type === 'video') {
                             $poster = $item->media[0]->source;
                             $source = $item->media[0]->video;
-                            $image = "<video class=\"embed-responsive-item\" width=\"230\" height=\"180\" 
+                            $image = "<video class=\"embed-responsive-item\" width=\"350\" 
                                     poster=\"{$poster}\" controls>
                                      <source src=\"{$source}\" type=\"video/mp4\" />
                                    </video>";
+                        } else if (!empty($item->media[0]) && $item->media[0]->type === 'video_fb') {
+                            $source = $item->media[0]->video;
+                            $width =  '100%';
+                            if($item->media[0]->height > $item->media[0]->width){
+                                $height = '620';
+                            } else if($item->media[0]->height == $item->media[0]->width){
+                                $height = '350';
+                            } else{
+                                $height = '200';
+                            }
+                            $image = '<iframe wmode="opaque" width="'.$width.'" height="'.$height.'" border="0" src="https://www.facebook.com/plugins/video.php?href='.$source.'&show_text=0&width=350&controls=true"></iframe>';
                         } else if (!empty($item->media) && count($item->media) > 1 ){
                             $indicators = array();
                             $slides = array();
@@ -74,7 +85,7 @@ $feed = new SocialFeed();
                             $source = $item->media[0]->source;
                             $image = "<img class=\"media\" src=\"{$source}\"/>";
                         }
-                        echo '<div class="grid-item col-md-3"><div class="thumbnail">'
+                        echo '<div class="grid-item col-md-4"><div class="thumbnail">'
                                 //. '<a target="_blank" href="' . $item->link . '">'
                                 // . '<div class="media">' . $image . '</div>' 
                                 . $image
