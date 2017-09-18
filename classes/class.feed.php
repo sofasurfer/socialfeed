@@ -55,6 +55,8 @@ class SocialFeed {
                 'date' => $ig->created_time,
                 'text' => $message,
                 'media' => $media,
+                'likes' => count($ig->likes->data),
+                'comments' => count($ig->comments->data),
                 'link' => $ig->link
                 );
             array_push($feed, $item);
@@ -94,6 +96,8 @@ class SocialFeed {
                 'date' => strtotime($ig->created_time),
                 'text' => $message,
                 'media' => $media,
+                'likes' => count($ig->likes->data),
+                'comments' => count($ig->comments->data),
                 'link' => $ig->link
                 );
             array_push($feed, $item);
@@ -137,6 +141,8 @@ class SocialFeed {
                 'date' => strtotime($ig->created_at),
                 'text' => $message,
                 'media' => $media,
+                'likes' => $ig->favorite_count,
+                'comments' => $ig->retweet_count,                
                 'link' => 'https://twitter.com/statuses/'.$ig->id
                 );
             array_push($feed, $item);
@@ -193,7 +199,7 @@ class SocialFeed {
             $facebook = new Facebook($config);
 
             // now we can access various parts of the graph, starting with the feed
-            $pagefeed = $facebook->api("/" . FACEBOOK_PAGEID . "/feed?fields=attachments,message,link,created_time");
+            $pagefeed = $facebook->api("/" . FACEBOOK_PAGEID . "/feed?fields=attachments,message,link,created_time,likes,comments");
             $json = json_encode($pagefeed);
             $this->set_cache('facebook',$json);
         }

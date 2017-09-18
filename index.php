@@ -30,7 +30,7 @@ $feed = new SocialFeed();
             <div id="all" class="row">
 
                 <?php 
-                $all = $feed->get_feeds();
+                $all = $feed->get_feeds(array('instagram','twitter'));
                 
                 if( false ){
                     echo '<pre>'.print_r($all,true).'</pre>';
@@ -74,11 +74,18 @@ $feed = new SocialFeed();
                             $source = $item->media[0]->source;
                             $image = "<img class=\"media\" src=\"{$source}\"/>";
                         }
-                        echo '<div class="grid-item col-md-3"><div class="thumbnail">' 
-                                . $image 
+                        echo '<div class="grid-item col-md-3"><div class="thumbnail">'
+                                . '<a target="_blank" href="' . $item->link . '">'
+                                // . '<div class="media">' . $image . '</div>' 
+                                . $image
+                                . '</a>'
+                                . '<div class="meta">' . date('d.m.Y', $item->date) . ' - <a target="_blank" href="' . $item->link . '">' . $item->source . '</a></div>'
                                 . '<p>' . $item->text .'</p>' 
-                                . '<div class="meta">' . date('d.m.Y', $item->date) . ' - <a target="_blank" href="' . $item->link . '">' . $item->source . '</a></div>'.
-                              '</div></div>';
+                                . '<div class="info" >'
+                                . '<i class="fa fa-thumbs-o-up"><span>' . $item->likes . ' Likes</span></i> '
+                                . '<i class="fa fa-comment-o"><span>' . $item->comments . ' Comments</span></i>'
+                                . '</div>'
+                              . '</div></div>';
                     }
                     echo '</div>';
                 }
