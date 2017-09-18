@@ -13,7 +13,7 @@ class SocialFeed {
     /*
         Retrieve all feeds together
     */
-    public function get_feeds(){
+    public function get_feeds($sources=array('instagram','facebook','twitter')){
 
         // Feed list
         $feed = array();
@@ -21,132 +21,144 @@ class SocialFeed {
         /*
             Get Instagram feed
         */
-        $ig_feed = $this->get_instagram();
-        foreach($ig_feed->items as $ig){
-            $media = array();
-            // Get video/image sources
-            if( $ig->type === 'video' ){
-                $media[] = array(
-                    'type' => $ig->type,
-                    'video' => $ig->videos->standard_resolution->url,
-                    'source' => $ig->images->standard_resolution->url
-                );
-            }else if(!empty($ig->carousel_media)){
+        if( in_array('instagram', $sources)){
+            $ig_feed = $this->get_instagram();
+            foreach($ig_feed->items as $ig){
                 $media = array();
-                foreach($ig->carousel_media as $image){
+                // Get video/image sources
+                if( $ig->type === 'video' ){
+                    $media[] = array(
+                        'type' => $ig->type,
+                        'video' => $ig->videos->standard_resolution->url,
+                        'source' => $ig->images->standard_resolution->url
+                    );
+                }else if(!empty($ig->carousel_media)){
+                    $media = array();
+                    foreach($ig->carousel_media as $image){
+                        array_push($media, array(
+                            'type' => 'photo',
+                            'source' => $image->images->standard_resolution->url
+                        ));
+                    }
+                }else{
                     array_push($media, array(
-                        'type' => 'photo',
-                        'source' => $image->images->standard_resolution->url
+                        'type' => $ig->type,
+                        'source' => $ig->images->standard_resolution->url
                     ));
                 }
-            }else{
-                array_push($media, array(
-                    'type' => $ig->type,
-                    'source' => $ig->images->standard_resolution->url
-                ));
-            }
-            // Replace hashtags and user links
-            $message = preg_replace('/#([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://www.instagram.com/explore/tags/$1/">#$1</a>', $ig->caption->text);
-            $message = preg_replace('/@([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://www.instagram.com/$1/">@$1</a>', $message);
+                // Replace hashtags and user links
+                $message = preg_replace('/#([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://www.instagram.com/explore/tags/$1/">#$1</a>', $ig->caption->text);
+                $message = preg_replace('/@([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://www.instagram.com/$1/">@$1</a>', $message);
 
-            // Add new item
-            $item = array(
-                'source' => 'instagram',
-                'date' => $ig->created_time,
-                'text' => $message,
-                'media' => $media,
-                'likes' => count($ig->likes->data),
-                'comments' => count($ig->comments->data),
-                'link' => $ig->link
-                );
-            array_push($feed, $item);
+                // Add new item
+                $item = array(
+                    'source' => 'instagram',
+                    'date' => $ig->created_time,
+                    'text' => $message,
+                    'media' => $media,
+                    'likes' => count($ig->likes->data),
+                    'comments' => count($ig->comments->data),
+                    'link' => $ig->link
+                    );
+                array_push($feed, $item);
+            }
         }
 
         /*
             Get Facebook feed
         */
-        $fb_feed = $this->get_facebook();
-        foreach($fb_feed->data as $ig){
-            $media = array();
-            // Get video/image sources
-            if(!empty($ig->attachments->data[0]->type) && $ig->attachments->data[0]->type === 'video_inline'){
-                $media[] = array(
-                    'type' => 'video',
-                    'video' => $ig->attachments->data[0]->url,
-                    'source' => $ig->attachments->data[0]->media->image->src,
-                    );
-            }else if(!empty($ig->attachments->data[0]->media->image->src)){
-                $media[] = array(
-                    'type' => $ig->attachments->data[0]->type,
-                    'source' => $ig->attachments->data[0]->media->image->src,
-                    );  
-            }else{
-                $media[] = array('type'=>'none');
-            }
+        if( in_array('facebook', $sources)){
+            $fb_feed = $this->get_facebook();
+            foreach($fb_feed->data as $ig){
+                $media = array();
+                // Get video/image sources
+                if(!empty($ig->attachments->data[0]->type) && $ig->attachments->data[0]->type === 'video_inline'){
+                    $media[] = array(
+                        'type' => 'video',
+                        'video' => $ig->attachments->data[0]->url,
+                        'source' => $ig->attachments->data[0]->media->image->src,
+                        );
+                }else if(!empty($ig->attachments->data[0]->media->image->src)){
+                    $media[] = array(
+                        'type' => $ig->attachments->data[0]->type,
+                        'source' => $ig->attachments->data[0]->media->image->src,
+                        );  
+                }else{
+                    $media[] = array('type'=>'none');
+                }
 
-            // Replace long URL's
-            $message='';
-            if(!empty($ig->message)){
-                $regex = "@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?).*$)@";
-                $message = preg_replace($regex, ' ', $ig->message);
-                $message = preg_replace('/#([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://www.facebook.com/hashtag/$1/">#$1</a>', $message);                
+                // Replace long URL's
+                $message='';
+                if(!empty($ig->message)){
+                    $regex = "@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?).*$)@";
+                    $message = preg_replace($regex, ' ', $ig->message);
+                    $message = preg_replace('/#([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://www.facebook.com/hashtag/$1/">#$1</a>', $message);                
+                }
+                $item = array(
+                    'source' => 'facebook',
+                    'date' => strtotime($ig->created_time),
+                    'text' => $message,
+                    'media' => $media,
+                    'likes' => count($ig->likes->data),
+                    'comments' => count($ig->comments->data),
+                    'link' => $ig->link
+                    );
+                array_push($feed, $item);
             }
-            $item = array(
-                'source' => 'facebook',
-                'date' => strtotime($ig->created_time),
-                'text' => $message,
-                'media' => $media,
-                'likes' => count($ig->likes->data),
-                'comments' => count($ig->comments->data),
-                'link' => $ig->link
-                );
-            array_push($feed, $item);
         }
 
         /*
             Get Twitter feed
         */
-        $tw_feed = $this->get_twitter();
-        foreach($tw_feed as $ig){
-            $media = array();
-            $url = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i'; 
-            $message = preg_replace($url, '<a href="$0" target="_blank" title="$0">$0</a>', $ig->text);
+        if( in_array('twitter', $sources)){
+            $tw_feed = $this->get_twitter();
+            foreach($tw_feed as $ig){
+                $media = array();
+                $url = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i'; 
+                $message = preg_replace($url, '<a href="$0" target="_blank" title="$0">$0</a>', $ig->text);
 
-            // Replace hashtags
-            $message = preg_replace('/#([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://twitter.com/hashtag/$1/">#$1</a>', $message);
-            $message = preg_replace('/@([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://twitter.com/$1/">@$1</a>', $message);
+                // Replace hashtags
+                $message = preg_replace('/#([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://twitter.com/hashtag/$1/">#$1</a>', $message);
+                $message = preg_replace('/@([0-9a-zA-Z]+)/i', '<a target="_blank" href="https://twitter.com/$1/">@$1</a>', $message);
+                // Get media
+                if(!empty($ig->entities->media)){
+                    // error_log($ig->text . ': ' . print_r($ig->entities->media,true));
 
-            // Get media
-            if(!empty($ig->entities->media)){
-                // error_log($ig->text . ': ' . print_r($ig->entities->media,true));
-                if($ig->entities->media[0]->type === 'video'){
-                    $media[] = array(
-                        'type' => 'video',
-                        'video' => '',
-                        'source' => $ig->entities->media[0]->media_url_https,
-                        );
+                    if($ig->entities->media[0]->type === 'video'){
+                        $media[] = array(
+                            'type' => 'video',
+                            'video' => '',
+                            'source' => $ig->entities->media[0]->media_url_https,
+                            );
+                    }else if($ig->extended_entities->media[0]->type === 'animated_gif'){
+                        $media[] = array(
+                            'type' => 'video',
+                            'video' => $ig->extended_entities->media[0]->video_info->variants[0]->url,
+                            'source' => $ig->entities->media[0]->media_url_https,
+                            );                        
+                    }else{
+                        $media[] = array(
+                            'type' => $ig->entities->media[0]->type,
+                            'source' => $ig->entities->media[0]->media_url_https,
+                            );  
+                    }
                 }else{
-                    $media[] = array(
-                        'type' => $ig->entities->media[0]->type,
-                        'source' => $ig->entities->media[0]->media_url_https,
-                        );  
+                    $media[] = array('type'=>'none');
                 }
-            }else{
-                $media[] = array('type'=>'none');
-            }
 
 
-            $item = array(
-                'source' => 'twitter',
-                'date' => strtotime($ig->created_at),
-                'text' => $message,
-                'media' => $media,
-                'likes' => $ig->favorite_count,
-                'comments' => $ig->retweet_count,                
-                'link' => 'https://twitter.com/statuses/'.$ig->id
-                );
-            array_push($feed, $item);
-        } 
+                $item = array(
+                    'source' => 'twitter',
+                    'date' => strtotime($ig->created_at),
+                    'text' => $message,
+                    'media' => $media,
+                    'likes' => $ig->favorite_count,
+                    'comments' => $ig->retweet_count,                
+                    'link' => 'https://twitter.com/statuses/'.$ig->id
+                    );
+                array_push($feed, $item);
+            } 
+        }
 
         // sort result
         usort($feed, function($a, $b) {

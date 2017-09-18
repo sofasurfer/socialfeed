@@ -38,7 +38,7 @@ $feed = new SocialFeed();
                     echo '<div class="grid all">';
                     foreach($all as $item){
                         $image = "";
-                        if (!empty($item->media[0]) && $item->media[0]->type === 'video' && $item->source === 'instagram') {
+                        if (!empty($item->media[0]) && $item->media[0]->type === 'video') {
                             $poster = $item->media[0]->source;
                             $source = $item->media[0]->video;
                             $image = "<video class=\"embed-responsive-item\" width=\"230\" height=\"180\" 
@@ -75,10 +75,10 @@ $feed = new SocialFeed();
                             $image = "<img class=\"media\" src=\"{$source}\"/>";
                         }
                         echo '<div class="grid-item col-md-3"><div class="thumbnail">'
-                                . '<a target="_blank" href="' . $item->link . '">'
+                                //. '<a target="_blank" href="' . $item->link . '">'
                                 // . '<div class="media">' . $image . '</div>' 
                                 . $image
-                                . '</a>'
+                                //. '</a>'
                                 . '<div class="meta">' . date('d.m.Y', $item->date) . ' - <a target="_blank" href="' . $item->link . '">' . $item->source . '</a></div>'
                                 . '<p>' . $item->text .'</p>' 
                                 . '<div class="info" >'
