@@ -23,7 +23,7 @@ class SocialFeed {
         */
         if( in_array('instagram', $sources)){
             $ig_feed = $this->get_instagram();
-            foreach($ig_feed->items as $ig){
+            foreach($ig_feed->data as $ig){
                 $media = array();
                 // Get video/image sources
                 if( $ig->type === 'video' ){
@@ -56,8 +56,8 @@ class SocialFeed {
                     'date' => $ig->created_time,
                     'text' => $message,
                     'media' => $media,
-                    'likes' => count($ig->likes->data),
-                    'comments' => count($ig->comments->data),
+                    'likes' => $ig->likes->count,
+                    'comments' => $ig->comments->count,
                     'link' => $ig->link
                     );
                 array_push($feed, $item);
@@ -180,7 +180,8 @@ class SocialFeed {
         if($this->get_cache('instagram')){
             $json = $this->get_cache('instagram');
         }else{
-            $url = 'https://www.instagram.com/'.INSTAGRAM_FEED.'/media/';
+            $url = "https://api.instagram.com/v1/users/self/media/recent/?access_token=".INSTAGRAM_ACCESSTOKEN;
+
             if (!function_exists('curl_init')){ 
                 die('CURL is not installed!');
             }

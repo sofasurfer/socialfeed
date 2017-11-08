@@ -7,7 +7,7 @@ define('FEED_CACHE_TIME',    60);  // amount of seconds to cache the feed
 /*
     Instagram settings (only for public accounts)
 */
-define('INSTAGRAM_FEED',    'XXXXXXXX'); // instagram username to retrieve
+define('INSTAGRAM_ACCESSTOKEN', 'XXXXXXXX'); // instagram ACCESS Token
 
 /*
     Facebook settings, for more info visit:
